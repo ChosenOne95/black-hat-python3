@@ -1,0 +1,4 @@
+def main():
+    options, server, remote = parse_options()
+    password = None
+    
