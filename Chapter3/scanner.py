@@ -6,26 +6,29 @@ import threading
 import time
 from netaddr import IPNetwork, IPAddress
 
+
 # host to listen on
-host = "192.168.2.99"
+host = "192.168.11.64"
 
 # subnet to target
-subnet = "192.168.2.0/24"
+subnet = "192.168.11.0/24"
 
 # magic string we'll check ICMP responses for
 magic_message = "PYTHONRULES!"
 
 # this sprays out the UDP datagrams
-def udp_sender(subnet, magic_message):
+def udp_sender(add, m):
+
     time.sleep(5)
     sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    for ip in IPNetwork(subnet):
+    for ip in IPNetwork(add):
+        #for port_num in range(1, 6000):
+        #sender.sendto(bytes(m, encoding='utf-8'), (str(ip), 65333))
         try:
-            sender.sendto(magic_message, ("%s" % ip, 65212))
+            sender.sendto(bytes(m, encoding='utf-8'), (str(ip), 65333))
+            #print("try to connect {}:{}".format(ip, port_num))
         except:
-            pass
-
+            print("error")
 # our IP header
 class IP(Structure):
     _fields_ = [
@@ -102,13 +105,15 @@ try:
         raw_buffer = sniffer.recvfrom(65565)[0]
         # raw_buffer = sniffer.recvfrom(65565)
         # create an IP header from the first 20 bytes of the buffer
-        ip_header = IP(str(raw_buffer[0:20]).encode(encoding='utf-8'))
+        ip_header = IP(raw_buffer[0:20])
 
         # print out the protocol that was detected and the hosts
         #print "Protocol: %s %s -> %s" % (ip_header.protocol,
                                          #ip_header.src_address,
                                          #ip_header.dst_address)
-
+        # print("try {} times".format(i))
+        # i += 1
+        # print(ip_header.protocol)
         # if it's ICMP, we want it
         if ip_header.protocol == "ICMP":
             # calculate where our ICMP packet starts
@@ -122,11 +127,12 @@ try:
 
             # now check for the TYPE 3 and CODE 3 whcih indicates a host is up
             # but no port available to talk to
+
             if icmp_header.code == 3 and icmp_header.type == 3:
                 # make sure host is in our target subnet
                 if IPAddress(ip_header.src_address) in IPNetwork(subnet):
                     # make sure it has our magic message
-                    if raw_buffer[len(raw_buffer) - len(magic_message):] == magic_message:
+                    if str(raw_buffer[len(raw_buffer) - len(magic_message):])[2:-1] == magic_message:
                         print("Host Up: {}".format(ip_header.src_address))
 
         #print("Host Up: {}".format(ip_header.src_address))
