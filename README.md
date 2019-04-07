@@ -1,2 +1,2 @@
 # black-hat-python3
-Rewirte the code of the book "Black Hat Python".
+Rewirte the code of the book "Black Hat Python" with python3.
