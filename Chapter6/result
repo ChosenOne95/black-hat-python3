@@ -1,0 +1,10 @@
+1 requests highlighted
+User selected host: google.com
+Performing Bing search: 'ip:172.217.24.14'
+%27ip%3A172.217.24.14%27
+Performing Bing search: 'domain:google.com'
+%27domain%3Agoogle.com%27
+{u'message': u'Resource not found', u'statusCode': 404}
+{u'message': u'Resource not found', u'statusCode': 404}
+No result from Bing
+No result from Bing
